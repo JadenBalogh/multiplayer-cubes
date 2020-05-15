@@ -2,32 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+namespace Game
 {
-    public float moveSpeed = 1f;
-    public float strafeSpeed = 1f;
-
-    private Rigidbody rb;
-
-    void Awake()
+    public class Player : MonoBehaviour
     {
-        rb = GetComponent<Rigidbody>();
-    }
+        public float moveSpeed = 1f;
+        public float strafeSpeed = 1f;
 
-    void Start()
-    {
-        transform.position = new Vector3(Random.Range(-4f, 4f), 0.5f, 0f);
-    }
+        private Rigidbody rb;
 
-    void FixedUpdate()
-    {
-        float dx = Input.GetAxis("Horizontal");
-        float dz = Input.GetAxis("Vertical");
+        void Awake()
+        {
+            rb = GetComponent<Rigidbody>();
+        }
 
-        float velocityX = dx * strafeSpeed * Time.deltaTime;
-        float velocityZ = dz * moveSpeed * Time.deltaTime;
-        Vector3 force = new Vector3(velocityX, 0f, velocityZ);
+        void Start()
+        {
+            transform.position = new Vector3(Random.Range(-4f, 4f), 0.5f, 0f);
+        }
 
-        rb.AddForce(force);
+        void FixedUpdate()
+        {
+            float dx = Input.GetAxis("Horizontal");
+            float dz = Input.GetAxis("Vertical");
+
+            float vx = dx * strafeSpeed;
+            float vy = dz * moveSpeed;
+            rb.velocity = new Vector3(vx, 0f, vy);
+        }
     }
 }
