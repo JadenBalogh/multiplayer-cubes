@@ -1,23 +1,37 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-namespace Game
+public class FollowPlayer : NetworkBehaviour
 {
-    public class FollowPlayer : MonoBehaviour
+    public Player player;
+    public Vector3 lookOffset = new Vector3(0, 1f, 0);
+    public float maxCameraDistance = 3f;
+    public float followTime = 0.5f;
+
+    private Vector3 currentVelocity;
+
+    void Start()
     {
-        public Player player;
-        public Vector3 offset = new Vector3(0, 1.5f, -2f);
-        public float lookAngle = -15f;
+        
+    }
 
-        void Start()
+    void Update()
+    {
+        Vector3 lookTarget = player.transform.position + lookOffset;
+        Vector3 offsetDirection = -player.lookDirection;
+        float cameraDistance = maxCameraDistance;
+
+        RaycastHit hit;
+        Ray ray = new Ray(lookTarget, offsetDirection);
+        if (Physics.Raycast(ray, out hit, maxCameraDistance))
         {
-            
+            cameraDistance = hit.distance;
         }
 
-        void Update()
-        {
-            
-        }
+        Vector3 cameraPosition = lookTarget + (offsetDirection * cameraDistance);
+        transform.position = Vector3.SmoothDamp(transform.position, cameraPosition, ref currentVelocity, followTime);
+        transform.LookAt(lookTarget);
     }
 }

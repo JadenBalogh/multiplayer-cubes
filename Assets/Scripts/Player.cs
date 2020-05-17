@@ -2,33 +2,39 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game
+public class Player : MonoBehaviour
 {
-    public class Player : MonoBehaviour
+    public float lookSensitivity = 1f;
+    public float forwardSpeed = 1f;
+    public float strafeSpeed = 1f;
+    public Vector3 lookDirection;
+
+    private Rigidbody rb;
+
+    void Awake()
     {
-        public float moveSpeed = 1f;
-        public float strafeSpeed = 1f;
+        rb = GetComponent<Rigidbody>();
+    }
 
-        private Rigidbody rb;
+    void Start()
+    {
+        transform.position = new Vector3(Random.Range(-4f, 4f), 0.5f, 0f);
+    }
 
-        void Awake()
-        {
-            rb = GetComponent<Rigidbody>();
-        }
+    void FixedUpdate()
+    {
+        float rotationX = Input.GetAxis("Mouse X") * lookSensitivity;
+        float rotationY = Input.GetAxis("Mouse Y") * lookSensitivity;
+        Quaternion rotation = Quaternion.AngleAxis(rotationX, Vector3.up) * Quaternion.AngleAxis(rotationY, Vector3.right);
+        lookDirection = rotation * lookDirection;
 
-        void Start()
-        {
-            transform.position = new Vector3(Random.Range(-4f, 4f), 0.5f, 0f);
-        }
+        transform.rotation = Quaternion.LookRotation(lookDirection, Vector3.up);
 
-        void FixedUpdate()
-        {
-            float dx = Input.GetAxis("Horizontal");
-            float dz = Input.GetAxis("Vertical");
+        float dx = Input.GetAxis("Horizontal");
+        float dz = Input.GetAxis("Vertical");
 
-            float vx = dx * strafeSpeed;
-            float vy = dz * moveSpeed;
-            rb.velocity = new Vector3(vx, 0f, vy);
-        }
+        float vx = dx * strafeSpeed;
+        float vy = dz * forwardSpeed;
+        rb.velocity = new Vector3(vx, 0f, vy);
     }
 }
