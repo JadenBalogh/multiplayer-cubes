@@ -1,14 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class Player : MonoBehaviour
+public class Player : NetworkBehaviour
 {
     public float lookSensitivity = 1f;
     public float forwardSpeed = 1f;
     public float strafeSpeed = 1f;
-    public Vector3 lookDirection;
+    public float jumpSpeed = 1f;
 
+    private Vector3 lookDirection;
+    private float rotationX;
+    private float rotationY;
     private Rigidbody rb;
 
     void Awake()
@@ -18,23 +22,62 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        transform.position = new Vector3(Random.Range(-4f, 4f), 0.5f, 0f);
+        lookDirection = Vector3.forward;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    void Update()
+    {
+        Jump();
     }
 
     void FixedUpdate()
     {
-        float rotationX = Input.GetAxis("Mouse X") * lookSensitivity;
-        float rotationY = Input.GetAxis("Mouse Y") * lookSensitivity;
-        Quaternion rotation = Quaternion.AngleAxis(rotationX, Vector3.up) * Quaternion.AngleAxis(rotationY, Vector3.right);
-        lookDirection = rotation * lookDirection;
+        MouseLook();
+        Move();
+    }
 
-        transform.rotation = Quaternion.LookRotation(lookDirection, Vector3.up);
+    public Vector3 GetLookDirection()
+    {
+        return lookDirection;
+    }
 
-        float dx = Input.GetAxis("Horizontal");
-        float dz = Input.GetAxis("Vertical");
+    public Vector3 GetForwardDirection()
+    {
+        return new Vector3(lookDirection.x, 0f, lookDirection.z).normalized;
+    }
 
-        float vx = dx * strafeSpeed;
-        float vy = dz * forwardSpeed;
-        rb.velocity = new Vector3(vx, 0f, vy);
+    public Vector3 GetStrafeDirection()
+    {
+        return new Vector3(lookDirection.z, 0f, -lookDirection.x).normalized;
+    }
+
+    private void MouseLook()
+    {
+        rotationX += Input.GetAxis("Mouse X") * lookSensitivity;
+        rotationY += Input.GetAxis("Mouse Y") * lookSensitivity;
+        rotationY = Mathf.Clamp(rotationY, -80f, 80f);
+        Quaternion rotation = Quaternion.AngleAxis(rotationX, Vector3.up) * Quaternion.AngleAxis(rotationY, Vector3.left);
+        lookDirection = (rotation * Vector3.forward).normalized;
+    }
+
+    private void Move()
+    {
+        float forwardInput = Input.GetAxis("Vertical");
+        float strafeInput = Input.GetAxis("Horizontal");
+        Vector3 forwardVelocity = forwardInput * forwardSpeed * GetForwardDirection();
+        Vector3 strafeVelocity = strafeInput * strafeSpeed * GetStrafeDirection();
+        rb.velocity = forwardVelocity + strafeVelocity;
+
+        transform.rotation = Quaternion.LookRotation(GetForwardDirection(), Vector3.up);
+    }
+
+    private void Jump()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("Jumped");
+            rb.velocity += jumpSpeed * Vector3.up;
+        }
     }
 }

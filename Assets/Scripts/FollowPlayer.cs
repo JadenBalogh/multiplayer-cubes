@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 
-public class FollowPlayer : NetworkBehaviour
+public class FollowPlayer : MonoBehaviour
 {
     public Player player;
     public Vector3 lookOffset = new Vector3(0, 1f, 0);
@@ -12,17 +11,16 @@ public class FollowPlayer : NetworkBehaviour
 
     private Vector3 currentVelocity;
 
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
-        Vector3 lookTarget = player.transform.position + lookOffset;
-        Vector3 offsetDirection = -player.lookDirection;
-        float cameraDistance = maxCameraDistance;
+        Vector3 offsetDirection = -player.GetLookDirection();
+        Vector3 targetOffset = 
+            lookOffset.z * player.GetForwardDirection() + 
+            lookOffset.x * player.GetStrafeDirection() + 
+            lookOffset.y * Vector3.up;
+        Vector3 lookTarget = player.transform.position + targetOffset;
 
+        float cameraDistance = maxCameraDistance;
         RaycastHit hit;
         Ray ray = new Ray(lookTarget, offsetDirection);
         if (Physics.Raycast(ray, out hit, maxCameraDistance))

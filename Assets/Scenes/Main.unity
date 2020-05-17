@@ -232,7 +232,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &963194226
 AudioListener:
   m_ObjectHideFlags: 0
@@ -341,9 +341,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfd13d9f067b16c4e8a0d3ab1b5e194c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  offset: {x: 0, y: 1.5, z: -2}
-  lookAngle: -15
+  syncMode: 0
+  syncInterval: 0.1
+  player: {fileID: 0}
+  lookOffset: {x: 0, y: 1, z: 0}
+  maxCameraDistance: 3
+  followTime: 0.5
 --- !u!1 &1147850810
 GameObject:
   m_ObjectHideFlags: 0
