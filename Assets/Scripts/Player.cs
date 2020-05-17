@@ -8,7 +8,7 @@ public class Player : NetworkBehaviour
     public float lookSensitivity = 1f;
     public float forwardSpeed = 1f;
     public float strafeSpeed = 1f;
-    public float jumpSpeed = 1f;
+    public float jumpHeight = 1f;
 
     private Vector3 lookDirection;
     private float rotationX;
@@ -28,13 +28,12 @@ public class Player : NetworkBehaviour
 
     void Update()
     {
-        Jump();
+        Move();
     }
 
     void FixedUpdate()
     {
         MouseLook();
-        Move();
     }
 
     public Vector3 GetLookDirection()
@@ -59,6 +58,8 @@ public class Player : NetworkBehaviour
         rotationY = Mathf.Clamp(rotationY, -80f, 80f);
         Quaternion rotation = Quaternion.AngleAxis(rotationX, Vector3.up) * Quaternion.AngleAxis(rotationY, Vector3.left);
         lookDirection = (rotation * Vector3.forward).normalized;
+
+        transform.rotation = Quaternion.LookRotation(GetForwardDirection(), Vector3.up);
     }
 
     private void Move()
@@ -67,17 +68,13 @@ public class Player : NetworkBehaviour
         float strafeInput = Input.GetAxis("Horizontal");
         Vector3 forwardVelocity = forwardInput * forwardSpeed * GetForwardDirection();
         Vector3 strafeVelocity = strafeInput * strafeSpeed * GetStrafeDirection();
-        rb.velocity = forwardVelocity + strafeVelocity;
 
-        transform.rotation = Quaternion.LookRotation(GetForwardDirection(), Vector3.up);
-    }
-
-    private void Jump()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
+        Vector3 verticalVelocity = rb.velocity.y * Vector3.up;
+        if (Input.GetButtonDown("Jump"))
         {
-            Debug.Log("Jumped");
-            rb.velocity += jumpSpeed * Vector3.up;
+            verticalVelocity = jumpHeight * Vector3.up;
         }
+
+        rb.velocity = forwardVelocity + strafeVelocity + verticalVelocity;
     }
 }
