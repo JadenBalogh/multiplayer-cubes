@@ -11,8 +11,7 @@ public class FollowPlayer : MonoBehaviour
 
     private Vector3 currentVelocity;
 
-    void Update()
-    {
+    void Update() {
         Vector3 offsetDirection = -player.GetLookDirection();
         Vector3 targetOffset = 
             lookOffset.z * player.GetForwardDirection() + 
@@ -23,8 +22,7 @@ public class FollowPlayer : MonoBehaviour
         float cameraDistance = maxCameraDistance;
         RaycastHit hit;
         Ray ray = new Ray(lookTarget, offsetDirection);
-        if (Physics.Raycast(ray, out hit, maxCameraDistance))
-        {
+        if (Physics.Raycast(ray, out hit, maxCameraDistance)) {
             cameraDistance = hit.distance;
         }
 

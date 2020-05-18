@@ -5,6 +5,7 @@ using Mirror;
 
 public class Player : NetworkBehaviour
 {
+    public Camera playerCamera;
     public float lookSensitivity = 1f;
     public float forwardSpeed = 1f;
     public float strafeSpeed = 1f;
@@ -15,44 +16,49 @@ public class Player : NetworkBehaviour
     private float rotationY;
     private Rigidbody rb;
 
-    void Awake()
-    {
+    void Awake() {
         rb = GetComponent<Rigidbody>();
     }
 
-    void Start()
-    {
+    void Start() {
+        if (!hasAuthority) {
+            playerCamera.enabled = false;
+            return;
+        }
+        
         lookDirection = Vector3.forward;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    void Update()
-    {
+    void Update() {
+        if (!hasAuthority) {
+            return;
+        }
+
         Move();
     }
 
-    void FixedUpdate()
-    {
+    void FixedUpdate() {
+        if (!hasAuthority) {
+            return;
+        }
+
         MouseLook();
     }
 
-    public Vector3 GetLookDirection()
-    {
+    public Vector3 GetLookDirection() {
         return lookDirection;
     }
 
-    public Vector3 GetForwardDirection()
-    {
+    public Vector3 GetForwardDirection() {
         return new Vector3(lookDirection.x, 0f, lookDirection.z).normalized;
     }
 
-    public Vector3 GetStrafeDirection()
-    {
+    public Vector3 GetStrafeDirection() {
         return new Vector3(lookDirection.z, 0f, -lookDirection.x).normalized;
     }
 
-    private void MouseLook()
-    {
+    private void MouseLook() {
         rotationX += Input.GetAxis("Mouse X") * lookSensitivity;
         rotationY += Input.GetAxis("Mouse Y") * lookSensitivity;
         rotationY = Mathf.Clamp(rotationY, -80f, 80f);
@@ -62,16 +68,14 @@ public class Player : NetworkBehaviour
         transform.rotation = Quaternion.LookRotation(GetForwardDirection(), Vector3.up);
     }
 
-    private void Move()
-    {
+    private void Move() {
         float forwardInput = Input.GetAxis("Vertical");
         float strafeInput = Input.GetAxis("Horizontal");
         Vector3 forwardVelocity = forwardInput * forwardSpeed * GetForwardDirection();
         Vector3 strafeVelocity = strafeInput * strafeSpeed * GetStrafeDirection();
 
         Vector3 verticalVelocity = rb.velocity.y * Vector3.up;
-        if (Input.GetButtonDown("Jump"))
-        {
+        if (Input.GetButtonDown("Jump")) {
             verticalVelocity = jumpHeight * Vector3.up;
         }
 

@@ -294,6 +294,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  playerCamera: {fileID: 5546148318125653381}
   lookSensitivity: 10
   forwardSpeed: 6
   strafeSpeed: 6
