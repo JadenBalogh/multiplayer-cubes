@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 4027682233623333426}
   - component: {fileID: 4027682233623333425}
   - component: {fileID: 3218533859759105040}
-  - component: {fileID: 4027682233623333424}
+  - component: {fileID: 3404395539635653187}
   - component: {fileID: 4027682233623333428}
   - component: {fileID: 5043179711473131071}
   - component: {fileID: 4027682233623333429}
@@ -231,10 +231,10 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 0
---- !u!65 &4027682233623333424
-BoxCollider:
+--- !u!136 &3404395539635653187
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -243,8 +243,9 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4027682233623333428
 MonoBehaviour:
@@ -298,4 +299,4 @@ MonoBehaviour:
   lookSensitivity: 10
   forwardSpeed: 6
   strafeSpeed: 6
-  jumpHeight: 10
+  jumpHeight: 5
