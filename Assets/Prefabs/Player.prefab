@@ -277,7 +277,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 1
+  clientAuthority: 0
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
@@ -296,7 +296,11 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   playerCamera: {fileID: 5546148318125653381}
-  lookSensitivity: 10
+  lookSensitivity: 8
   forwardSpeed: 6
   strafeSpeed: 6
-  jumpHeight: 5
+  jumpHeight: 10
+  groundAngle: 120
+  groundLayermask:
+    serializedVersion: 2
+    m_Bits: 1

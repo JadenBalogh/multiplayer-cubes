@@ -10,10 +10,13 @@ public class Player : NetworkBehaviour
     public float forwardSpeed = 1f;
     public float strafeSpeed = 1f;
     public float jumpHeight = 1f;
+    public float groundAngle = 30f;
+    public LayerMask groundLayermask;
 
     private Vector3 lookDirection;
     private float rotationX;
     private float rotationY;
+    private bool grounded;
     private Rigidbody rb;
 
     void Awake() {
@@ -46,6 +49,29 @@ public class Player : NetworkBehaviour
         MouseLook();
     }
 
+    void OnCollisionEnter(Collision col) {
+        Debug.Log("Yeet");
+        bool isGroundLayer = ((1 << col.collider.gameObject.layer) & groundLayermask) != 0;
+        if (isGroundLayer) {
+            Vector3 normal = col.GetContact(0).normal;
+            float surfaceAngle = Vector3.Angle(Vector3.up, normal);
+
+            // Debug.Log(surfaceAngle);
+
+            if (surfaceAngle < groundAngle) {
+                grounded = true;
+            }
+        }
+    }
+
+    void OnCollisionExit(Collision col) {
+        Debug.Log("Yote");
+        bool isGroundLayer = ((1 << col.collider.gameObject.layer) & groundLayermask) != 0;
+        if (isGroundLayer) {
+            grounded = false;
+        }
+    }
+
     public Vector3 GetLookDirection() {
         return lookDirection;
     }
@@ -69,16 +95,24 @@ public class Player : NetworkBehaviour
     }
 
     private void Move() {
+        // Get keyboard input
         float forwardInput = Input.GetAxis("Vertical");
         float strafeInput = Input.GetAxis("Horizontal");
         Vector3 forwardVelocity = forwardInput * forwardSpeed * GetForwardDirection();
         Vector3 strafeVelocity = strafeInput * strafeSpeed * GetStrafeDirection();
 
-        Vector3 verticalVelocity = rb.velocity.y * Vector3.up;
-        if (Input.GetButtonDown("Jump")) {
-            verticalVelocity = jumpHeight * Vector3.up;
+        // Grounded spherecast check
+        // Ray ray = new Ray(transform.position, Vector3.down);
+        // bool grounded = Physics.SphereCast(ray, 0.5f, groundedDistance, groundLayermask);
+
+        // Vector3 verticalVelocity = rb.velocity.y * Vector3.up;
+        if (Input.GetButtonDown("Jump") && grounded) {
+            // verticalVelocity = jumpHeight * Vector3.up;
+            // rb.AddForce(jumpHeight * Vector3.up, ForceMode.Impulse);
+            rb.velocity = jumpHeight * Vector3.up;
         }
 
-        rb.velocity = forwardVelocity + strafeVelocity + verticalVelocity;
+        // rb.velocity = forwardVelocity + strafeVelocity + verticalVelocity;
+        transform.position += (forwardVelocity + strafeVelocity) * Time.deltaTime;
     }
 }
