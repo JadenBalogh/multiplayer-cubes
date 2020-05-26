@@ -304,3 +304,9 @@ MonoBehaviour:
   groundLayermask:
     serializedVersion: 2
     m_Bits: 1
+  maxHealth: 1
+  projectilePrefab: {fileID: 2735789721479201329, guid: 9a8b00a25a725944ba6d5f07c071616e,
+    type: 3}
+  projectileSpeed: 2
+  projectileSpawnOffset: 2
+  shootCooldown: 1

@@ -12,7 +12,15 @@ public class Player : NetworkBehaviour
     public float jumpHeight = 1f;
     public float groundAngle = 30f;
     public LayerMask groundLayermask;
+    public int maxHealth = 1;
+    public GameObject projectilePrefab;
+    public float projectileSpeed = 1f;
+    public float projectileSpawnOffset = 1f;
+    public float shootCooldown = 1f;
 
+    private int health;
+    private bool isAlive;
+    private bool canShoot;
     private Vector3 lookDirection;
     private float rotationX;
     private float rotationY;
@@ -31,6 +39,9 @@ public class Player : NetworkBehaviour
         
         lookDirection = Vector3.forward;
         Cursor.lockState = CursorLockMode.Locked;
+        health = maxHealth;
+        canShoot = true;
+        isAlive = true;
     }
 
     void Update() {
@@ -38,7 +49,12 @@ public class Player : NetworkBehaviour
             return;
         }
 
+        if (!isAlive) {
+            return;
+        }
+
         Move();
+        Shoot();
     }
 
     void FixedUpdate() {
@@ -46,17 +62,18 @@ public class Player : NetworkBehaviour
             return;
         }
 
+        if (!isAlive) {
+            return;
+        }
+
         MouseLook();
     }
 
     void OnCollisionEnter(Collision col) {
-        Debug.Log("Yeet");
         bool isGroundLayer = ((1 << col.collider.gameObject.layer) & groundLayermask) != 0;
         if (isGroundLayer) {
             Vector3 normal = col.GetContact(0).normal;
             float surfaceAngle = Vector3.Angle(Vector3.up, normal);
-
-            // Debug.Log(surfaceAngle);
 
             if (surfaceAngle < groundAngle) {
                 grounded = true;
@@ -65,10 +82,16 @@ public class Player : NetworkBehaviour
     }
 
     void OnCollisionExit(Collision col) {
-        Debug.Log("Yote");
         bool isGroundLayer = ((1 << col.collider.gameObject.layer) & groundLayermask) != 0;
         if (isGroundLayer) {
             grounded = false;
+        }
+    }
+
+    public void TakeDamage(int damage) {
+        health -= damage;
+        if (health <= 0) {
+            isAlive = false;
         }
     }
 
@@ -114,5 +137,22 @@ public class Player : NetworkBehaviour
 
         // rb.velocity = forwardVelocity + strafeVelocity + verticalVelocity;
         transform.position += (forwardVelocity + strafeVelocity) * Time.deltaTime;
+    }
+
+    private void Shoot() {
+        if (Input.GetButton("Fire1") && canShoot) {
+            StartCoroutine(ShootCooldownTimer());
+
+            Vector3 projPos = transform.position + lookDirection * projectileSpawnOffset;
+            GameObject proj = Instantiate(projectilePrefab, projPos, Quaternion.identity);
+            proj.GetComponent<Rigidbody>().velocity = lookDirection * projectileSpeed;
+            NetworkServer.Spawn(proj);
+        }
+    }
+
+    private IEnumerator ShootCooldownTimer() {
+        canShoot = false;
+        yield return new WaitForSeconds(shootCooldown);
+        canShoot = true;
     }
 }
